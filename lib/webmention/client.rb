@@ -1,3 +1,5 @@
+require 'pry'
+
 module Webmention
   class Client
     # Public: Returns a URI of the url initialized with.
@@ -22,6 +24,11 @@ module Webmention
     #
     # Returns the number of links found.
     def crawl
+      source = JSON.parse(open(self.url).read)
+      @links = source["supplement"]["manifests"]
+      
+      return @links.count
+=begin
       @links ||= Set.new
       if @url.nil?
         raise ArgumentError.new "url is nil."
@@ -35,6 +42,7 @@ module Webmention
       end
 
       return @links.count
+=end
     end
 
     # Public: Sends mentions to each of the links found in the page.
@@ -91,8 +99,19 @@ module Webmention
     # Returns false if does not support webmention, returns string
     # of url to ping if it does.
     def self.supports_webmention? url
-      return false if !Webmention::Client.valid_http_url? url
 
+      return false if !Webmention::Client.valid_http_url? url
+      ## hard coding true for the moment
+      ## this is where we might test if maniest contains a service
+
+      #something like 
+      # manifest = open(url).read
+      # if manifest["service"]["@type"] = "webmention"
+      #  return true
+      # end
+      return "http://www.e-codices.unifr.ch/metadata/iiif/webmention/endpoint"
+
+=begin
       doc = nil
 
       begin
@@ -125,6 +144,7 @@ module Webmention
       end
 
       return false
+=end      
     end
 
     def self.discover_webmention_endpoint_from_html html
