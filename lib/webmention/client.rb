@@ -105,11 +105,27 @@ module Webmention
       ## this is where we might test if maniest contains a service
 
       #something like 
-      # manifest = open(url).read
-      # if manifest["service"]["@type"] = "webmention"
-      #  return true
-      # end
-      return "http://www.e-codices.unifr.ch/metadata/iiif/webmention/endpoint"
+      manifest = JSON.parse(open(url).read).to_hash
+      
+      services = manifest["service"]
+      
+      if services.class == Hash ## ??
+        if services["@type"] == "webmention"
+            webmention_receiver = service["@id"]
+        end
+      else
+        services.each do |service|
+          if service.class == Hash
+            if service["@type"] == "webmention"
+              webmention_receiver = service["@id"]
+            end
+          end
+        end
+        return webmention_receiver
+      end
+      
+      #return "http://www.e-codices.unifr.ch/webmention/receive"
+
 
 =begin
       doc = nil
