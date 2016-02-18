@@ -101,14 +101,12 @@ module Webmention
     def self.supports_webmention? url
 
       return false if !Webmention::Client.valid_http_url? url
-      ## hard coding true for the moment
-      ## this is where we might test if maniest contains a service
-
-      #something like 
+      
       manifest = JSON.parse(open(url).read).to_hash
       
       services = manifest["service"]
       
+      #test if manifest has webmention listening service
       if services.class == Hash ## ??
         if services["@type"] == "webmention"
             webmention_receiver = service["@id"]
@@ -124,9 +122,6 @@ module Webmention
         return webmention_receiver
       end
       
-      #return "http://www.e-codices.unifr.ch/webmention/receive"
-
-
 =begin
       doc = nil
 
