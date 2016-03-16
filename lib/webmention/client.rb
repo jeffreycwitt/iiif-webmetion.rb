@@ -25,7 +25,7 @@ module Webmention
     # Returns the number of links found.
     def crawl
       source = JSON.parse(open(self.url).read)
-      @links = source["supplement"]["manifests"]
+      @links = source["supplement"]["within"]
       
       return @links.count
 =begin
@@ -108,13 +108,13 @@ module Webmention
       
       #test if manifest has webmention listening service
       if services.class == Hash ## ??
-        if services["@type"] == "webmention"
+        if services["profile"] == "http://w3.org/TR/webmention"
             webmention_receiver = service["@id"]
         end
       else
         services.each do |service|
           if service.class == Hash
-            if service["@type"] == "webmention"
+            if service["profile"] == "http://w3.org/TR/webmention"
               webmention_receiver = service["@id"]
             end
           end
